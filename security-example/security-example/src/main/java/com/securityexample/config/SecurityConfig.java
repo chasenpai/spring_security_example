@@ -46,6 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
+        //BCryptPasswordEncoder - bcrypt 강력 해싱 함수로 암호를 인코딩
         return new BCryptPasswordEncoder();
     }
 
