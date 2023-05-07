@@ -1,19 +1,16 @@
 package com.securityexample.config;
 
-import com.securityexample.service.InMemoryUserDetailsService;
+import com.securityexample.service.AuthenticationProviderService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.List;
+import java.util.Collections;
 
 @Configuration
 public class SecurityConfig {
@@ -22,8 +19,8 @@ public class SecurityConfig {
      * 시큐리티 5.7 부터 WebSecurityConfigurerAdapter Deprecated, Bean 등록으로 구성 해야함
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationProviderService service) throws Exception {
+        return new ProviderManager(Collections.singletonList(service));
     }
 
     @Bean
@@ -34,20 +31,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        String encodedPwd = new BCryptPasswordEncoder().encode("1234");
-        List<UserDetails> users = List.of( User.withUsername("junwvwv")
-                .password(encodedPwd)
-                .authorities("read")
-                .build());
-
-        return new InMemoryUserDetailsService(users);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
         //BCryptPasswordEncoder - bcrypt 강력 해싱 함수로 암호를 인코딩
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public SCryptPasswordEncoder sCryptPasswordEncoder(){
+        return new SCryptPasswordEncoder(16384, 9, 1, 64, 16);
+    }
+
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//        String encodedPwd = new BCryptPasswordEncoder().encode("1234");
+//        List<UserDetails> users = List.of( User.withUsername("junwvwv")
+//                .password(encodedPwd)
+//                .authorities("read")
+//                .build());
+//
+//        return new InMemoryUserDetailsService(users);
+//    }
 
 }
