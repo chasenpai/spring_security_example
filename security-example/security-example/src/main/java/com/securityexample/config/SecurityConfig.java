@@ -15,8 +15,10 @@ import java.util.Collections;
 @Configuration
 public class SecurityConfig {
 
+    //시큐리티 5.7 부터 WebSecurityConfigurerAdapter Deprecated, Bean 등록으로 구성 해야함
+
     /**
-     * 시큐리티 5.7 부터 WebSecurityConfigurerAdapter Deprecated, Bean 등록으로 구성 해야함
+     * ProviderManager - AuthenticationManager 의 구현체로, AuthenticationProvider 를 사용하여 사용자 인증 처리
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationProviderService service) throws Exception {
@@ -25,7 +27,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.httpBasic();
+        //http.httpBasic();
+        http.formLogin().defaultSuccessUrl("/");
         http.authorizeHttpRequests().anyRequest().authenticated(); //http.authorizeRequests() deprecated
         return http.build();
     }
