@@ -1,6 +1,7 @@
 package com.securityexample.entity;
 
 import com.securityexample.model.EncryptAlgorithm;
+import com.securityexample.model.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,14 +30,19 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private EncryptAlgorithm algorithm;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Authority> authorities;
 
     @Builder
-    public User(String username, String password, EncryptAlgorithm algorithm, List<Authority> authorities) {
+    public User(String username, String password, EncryptAlgorithm algorithm, Role role, List<Authority> authorities) {
         this.username = username;
         this.password = password;
         this.algorithm = algorithm;
+        this.role = role;
         this.authorities = authorities;
     }
 

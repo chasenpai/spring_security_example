@@ -3,6 +3,7 @@ package com.securityexample;
 import com.securityexample.entity.Authority;
 import com.securityexample.entity.User;
 import com.securityexample.model.EncryptAlgorithm;
+import com.securityexample.model.Role;
 import com.securityexample.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,16 @@ public class PersistenceTest {
     void saveUser(){
 
         User user = User.builder()
-                .username("junwvwv")
+                .username("manager1")
                 .password("$2a$10$rsnsLbZyV87kM9M4XA9nWuBKOBIiXSnVq9fEuC90sBzM5Kp8Cf2ZG")
                 .algorithm(EncryptAlgorithm.BCRYPT)
+                .role(Role.MANAGER)
                 .build();
 
         List<Authority> authorities = new ArrayList<>();
         Authority authority1 = Authority.builder()
                 .user(user)
-                .name("write")
+                .name("read")
                 .build();
         Authority authority2 = Authority.builder()
                 .user(user)

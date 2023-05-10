@@ -29,7 +29,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //http.httpBasic();
         http.formLogin().defaultSuccessUrl("/");
-        http.authorizeHttpRequests().anyRequest().authenticated(); //http.authorizeRequests() deprecated
+
+        http.authorizeHttpRequests()
+                .requestMatchers("/authority/read").hasAuthority("read")
+                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
+                .requestMatchers("/role/admin").hasRole("ADMIN")
+                .anyRequest().authenticated();
         return http.build();
     }
 

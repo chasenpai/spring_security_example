@@ -8,6 +8,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -37,9 +39,15 @@ public class UserDetailsCustom implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getAuthorities().stream()
-                .map(a -> new SimpleGrantedAuthority(a.getName())) //DB 에서 각 사용자에 대해 부여된 권한 이름을 매핑
-                .collect(Collectors.toList());
+
+        //각 사용자에 대해 부여된 권한을 매핑
+        Set<GrantedAuthority> authorities = user.getAuthorities().stream()
+                .map(a -> new SimpleGrantedAuthority(a.getName())).collect(Collectors.toSet());
+
+        //각 사용자에 대한 역할을 부여
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+
+        return authorities;
     }
 
     /**
