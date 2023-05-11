@@ -3,6 +3,7 @@ package com.securityexample.config;
 import com.securityexample.service.AuthenticationProviderService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,13 +29,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //http.httpBasic();
-        http.formLogin().defaultSuccessUrl("/");
+        //http.formLogin().defaultSuccessUrl("/");
 
+//        http.authorizeHttpRequests()
+//                .requestMatchers("/authority/read").hasAuthority("read")
+//                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
+//                .requestMatchers("/role/admin").hasRole("ADMIN")
+//                .anyRequest().authenticated();
+//        http.authorizeHttpRequests()
+//                .requestMatchers(HttpMethod.GET, "/item").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/item").authenticated()
+//                .requestMatchers(HttpMethod.DELETE, "/item").denyAll();
         http.authorizeHttpRequests()
-                .requestMatchers("/authority/read").hasAuthority("read")
-                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
-                .requestMatchers("/role/admin").hasRole("ADMIN")
-                .anyRequest().authenticated();
+                .requestMatchers("/v1/item/{param}").permitAll() //파라미터가 포함된 요청만 허가
+                .requestMatchers("/v2/item/{param:^[0-9]*$}").permitAll() //파라미터에 숫자가 포함된 요청만 허가
+                .anyRequest().denyAll();
+
         return http.build();
     }
 
