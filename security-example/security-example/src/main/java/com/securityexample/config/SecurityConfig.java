@@ -29,8 +29,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //http.httpBasic();
-        //http.formLogin().defaultSuccessUrl("/");
-
+        http.formLogin().defaultSuccessUrl("/");
 //        http.authorizeHttpRequests()
 //                .requestMatchers("/authority/read").hasAuthority("read")
 //                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
@@ -40,9 +39,15 @@ public class SecurityConfig {
 //                .requestMatchers(HttpMethod.GET, "/item").permitAll()
 //                .requestMatchers(HttpMethod.POST, "/item").authenticated()
 //                .requestMatchers(HttpMethod.DELETE, "/item").denyAll();
+        /**
+         * 스프링부트 3.0 부터(시큐리티 6.0)
+         * authorizeRequests => authorizeHttpRequests
+         * antMatchers, mvcMatchers, regexMatchers => requestMatchers
+         */
         http.authorizeHttpRequests()
                 .requestMatchers("/v1/item/{param}").permitAll() //파라미터가 포함된 요청만 허가
                 .requestMatchers("/v2/item/{param:^[0-9]*$}").permitAll() //파라미터에 숫자가 포함된 요청만 허가
+                .requestMatchers("/v1/order").authenticated()
                 .anyRequest().denyAll();
 
         return http.build();
