@@ -1,5 +1,7 @@
 package com.securityexample.config;
 
+import com.securityexample.filter.AuthenticationLoggingFilter;
+import com.securityexample.filter.RequestValidationFilter;
 import com.securityexample.service.AuthenticationProviderService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.util.Collections;
 
@@ -28,8 +31,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        //http.httpBasic();
-        http.formLogin().defaultSuccessUrl("/");
+        http.httpBasic();
+//        http.formLogin().defaultSuccessUrl("/");
 //        http.authorizeHttpRequests()
 //                .requestMatchers("/authority/read").hasAuthority("read")
 //                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
@@ -39,6 +42,10 @@ public class SecurityConfig {
 //                .requestMatchers(HttpMethod.GET, "/item").permitAll()
 //                .requestMatchers(HttpMethod.POST, "/item").authenticated()
 //                .requestMatchers(HttpMethod.DELETE, "/item").denyAll();
+
+        //인증 필터 전 후로 커스텀 필터 추가
+        http.addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
+            .addFilterAfter(new AuthenticationLoggingFilter(), BasicAuthenticationFilter.class);
         /**
          * 스프링부트 3.0 부터(시큐리티 6.0)
          * authorizeRequests => authorizeHttpRequests
