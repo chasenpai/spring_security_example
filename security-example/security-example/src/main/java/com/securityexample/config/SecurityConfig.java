@@ -1,6 +1,7 @@
 package com.securityexample.config;
 
 import com.securityexample.filter.AuthenticationLoggingFilter;
+import com.securityexample.filter.CsrfTokenLogger;
 import com.securityexample.filter.RequestValidationFilter;
 import com.securityexample.service.AuthenticationProviderService;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 import java.util.Collections;
 
@@ -31,8 +33,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.httpBasic();
-//        http.formLogin().defaultSuccessUrl("/");
+//        http.httpBasic();
+        http.formLogin().defaultSuccessUrl("/");
 //        http.authorizeHttpRequests()
 //                .requestMatchers("/authority/read").hasAuthority("read")
 //                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
@@ -44,18 +46,22 @@ public class SecurityConfig {
 //                .requestMatchers(HttpMethod.DELETE, "/item").denyAll();
 
         //인증 필터 전 후로 커스텀 필터 추가
-        http.addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
-            .addFilterAfter(new AuthenticationLoggingFilter(), BasicAuthenticationFilter.class);
+//        http.addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
+//            .addFilterAfter(new AuthenticationLoggingFilter(), BasicAuthenticationFilter.class);
         /**
          * 스프링부트 3.0 부터(시큐리티 6.0)
          * authorizeRequests => authorizeHttpRequests
          * antMatchers, mvcMatchers, regexMatchers => requestMatchers
          */
-        http.authorizeHttpRequests()
-                .requestMatchers("/v1/item/{param}").permitAll() //파라미터가 포함된 요청만 허가
-                .requestMatchers("/v2/item/{param:^[0-9]*$}").permitAll() //파라미터에 숫자가 포함된 요청만 허가
-                .requestMatchers("/v1/order").authenticated()
-                .anyRequest().denyAll();
+//        http.authorizeHttpRequests()
+//                .requestMatchers("/v1/item/{param}").permitAll() //파라미터가 포함된 요청만 허가
+//                .requestMatchers("/v2/item/{param:^[0-9]*$}").permitAll() //파라미터에 숫자가 포함된 요청만 허가
+//                .requestMatchers("/v1/order").authenticated()
+//                .anyRequest().denyAll();
+
+        http.addFilterAfter(new CsrfTokenLogger(), CsrfFilter.class)
+                .authorizeHttpRequests()
+                .anyRequest().authenticated();
 
         return http.build();
     }
