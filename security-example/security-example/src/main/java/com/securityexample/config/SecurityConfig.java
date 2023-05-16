@@ -3,6 +3,7 @@ package com.securityexample.config;
 import com.securityexample.filter.AuthenticationLoggingFilter;
 import com.securityexample.filter.CsrfTokenLogger;
 import com.securityexample.filter.RequestValidationFilter;
+import com.securityexample.repository.CsrfTokenRepositoryCustom;
 import com.securityexample.service.AuthenticationProviderService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import java.util.Collections;
 
@@ -34,7 +36,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http.httpBasic();
-        http.formLogin().defaultSuccessUrl("/");
+//        http.formLogin().defaultSuccessUrl("/");
+        http.authorizeHttpRequests().anyRequest().permitAll();
+//        http.authorizeHttpRequests().anyRequest().authenticated();
 //        http.authorizeHttpRequests()
 //                .requestMatchers("/authority/read").hasAuthority("read")
 //                .requestMatchers("/authority/write").hasAnyAuthority("read", "write")
@@ -59,11 +63,18 @@ public class SecurityConfig {
 //                .requestMatchers("/v1/order").authenticated()
 //                .anyRequest().denyAll();
 
-        http.addFilterAfter(new CsrfTokenLogger(), CsrfFilter.class)
-                .authorizeHttpRequests()
-                .anyRequest().authenticated();
+//
+        http.csrf(c -> { //Customizer<CsrfConfigurer<HttpSecurity>> 객체를 이용해 새로운 CsrfTokenRepository 구현을 CSRF 보호 매커니즘에 연결
+            c.csrfTokenRepository(csrfTokenRepository());
+            c.ignoringRequestMatchers("/v2/product");
+        });
 
         return http.build();
+    }
+
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository(){
+        return new CsrfTokenRepositoryCustom();
     }
 
     @Bean

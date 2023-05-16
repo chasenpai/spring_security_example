@@ -1,15 +1,13 @@
 package com.securityexample.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "token")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Token extends BaseTimeEntity {
 
     @Id
@@ -22,6 +20,10 @@ public class Token extends BaseTimeEntity {
     public Token(String identifier, String token) {
         this.identifier = identifier;
         this.token = token;
+    }
+
+    public void updateToken(String csrfToken){
+        this.token = csrfToken;
     }
 
 }
