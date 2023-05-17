@@ -17,8 +17,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -64,10 +67,24 @@ public class SecurityConfig {
 //                .anyRequest().denyAll();
 
 //
-        http.csrf(c -> { //Customizer<CsrfConfigurer<HttpSecurity>> 객체를 이용해 새로운 CsrfTokenRepository 구현을 CSRF 보호 매커니즘에 연결
-            c.csrfTokenRepository(csrfTokenRepository());
-            c.ignoringRequestMatchers("/v2/product");
-        });
+//        http.csrf(c -> { //Customizer<CsrfConfigurer<HttpSecurity>> 객체를 이용해 새로운 CsrfTokenRepository 구현을 CSRF 보호 매커니즘에 연결
+//            c.csrfTokenRepository(csrfTokenRepository());
+//            c.ignoringRequestMatchers("/v2/product");
+//        });
+//        http.cors(c -> { //CORS 구성 정의, 허용되는 출처 및 메소드를 설정하는 CorsConfiguration 객체를 생성. 컨트롤러에서 @CrossOrigin 으로 엔드포인트 구성 가능
+//            CorsConfigurationSource source = request -> {
+//                CorsConfiguration config = new CorsConfiguration();
+//                config.setAllowedOrigins( //허용 Origin 설정
+//                        List.of("api.example.com", "api.example.org")
+//                );
+//                config.setAllowedMethods( //허용 Http Method 설정
+//                        List.of("GET", "POST", "PUT", "DELETE")
+//                );
+//                return config;
+//            };
+//            c.configurationSource(source);
+//        });
+//        http.csrf().disable();
 
         return http.build();
     }
